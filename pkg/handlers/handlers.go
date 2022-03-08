@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/wakatara/go-serverless-yt/pkg/user/user"
+	"github.com/wakatara/go-serverless-yt/pkg/user"
 
 	"net/http"
 
