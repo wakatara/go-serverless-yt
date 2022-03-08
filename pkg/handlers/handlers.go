@@ -1,17 +1,55 @@
 package handlers
 
 import (
-	"encoding/json"
+	"github.com/wakatara/go-serverless-yt/pkg/user/user"
+
+	"net/http"
+
 	"github.com/aws/aws-lambda-go/events"
-
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
 
-func apiResponse(status int, body interface{}) (*eventsAPOGatewayProxyRepsonse, error) {
-	resp := events.APIGatewayProxyResponse(Headers: map[string]string["Content-Type":"application/json"]}
-	resp.StatusCode = status
+var ErrorMethodNotAllowed = "method not allowed"
 
-	stringBody, _ := json.Marshal(body)
-	resp.Body - string(stringBody)
-	return &resp, nil
-)
+type ErrorBody struct {
+	ErrorMsg *string `json:"error,omitempty"`
+}
+
+func GetUser(req events.APIGatewayProxyRequest, tableName string, dynaClient dynamodbiface.DynamoDBAPI) (
+	*events.APIGatewayProxyResponse, error) {
+
+	email := req.QueryStringParameters["email"]
+	if len(email) > 0 {
+		result, err := user.FetchUser(email, tableName, dynaClient)
+		if err != nil {
+			return apiResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+		}
+		return apiResponse(http.StatusOK, result)
+	}
+
+	result, err := user.FetchUsers(tableName, dynaClient)
+	if err != nil {
+		return apiResponse(http.StatusBadRequest, ErrorBody{aws.String(err.Error())})
+	}
+	return apiResponse(http.StatusOK, result)
+}
+
+func CreatetUser(req events.APIGatewayProxyRequest, tableName string, dynaClient dynamodbiface.DynamoDBAPI) (
+	*events.APIGatewayProxyResponse, error) {
+
+}
+
+func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynaClient dynamodbiface.DynamoDBAPI) (
+	*events.APIGatewayProxyResponse, error) {
+
+}
+
+func DeleteUser(req events.APIGatewayProxyRequest, tableName string, dynaClient dynamodbiface.DynamoDBAPI) (
+	*events.APIGatewayProxyResponse, error) {
+
+}
+
+func UnhandledMethod(*events.APIGatewayProxyResponse, error) {
+	return apiResponse(http.StatusMethodNotAllowed, ErrorMethodNotAllowed)
 }
