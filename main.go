@@ -1,8 +1,10 @@
 package main
+
 import (
 	"github.com/wakatara/go-serverless-yt/pkg/handlers"
 
 	"os"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
@@ -15,12 +17,12 @@ var (
 	dynaClient dynamodbiface.DynamoDBAPI
 )
 
-func main () {
+func main() {
 	region := os.Getenv("AWS_REGION")
-	awsSessionm err := session.NewSession(&aws.Config{
-		Region: aws.String(region)
+	awsSession, err := session.NewSession(&aws.Config{
+		Region: aws.String(region),
 	})
-	if err != nil{
+	if err != nil {
 		return
 	}
 	dynaClient = dynamodb.New(awsSession)
@@ -38,7 +40,7 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 	case "PUT":
 		return handlers.UpdateUser(req, tableName, dynaClient)
 	case "DELETE":
-		return handlers.DeletetUser(req, tableName, dynaClient)	
+		return handlers.DeletetUser(req, tableName, dynaClient)
 	default:
 		return handlers.UnhandledMethod()
 	}
