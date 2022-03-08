@@ -63,7 +63,7 @@ func FetchUsers(tableName string, dynaClient dynamodbiface.DynamoDBAPI) (*[]User
 		return nil, errors.New("ErrorFailedToFetchRecord")
 	}
 	item := new([]User)
-	err = dynamodbattribute.UnmarshalMap(result.Items, item)
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, item)
 	return item, nil
 }
 
@@ -72,7 +72,7 @@ func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynaClient 
 	error,
 ) {
 	var u User
-	if err := json.Unmarshal([]byte(req.body), &u); err != nil {
+	if err := json.Unmarshal([]byte(req.Body), &u); err != nil {
 		return nil, errors.New(ErrorInvalidUserData)
 	}
 	if !validators.IsEmailValid(u.Email) {
@@ -103,7 +103,7 @@ func CreateUser(req events.APIGatewayProxyRequest, tableName string, dynaClient 
 
 func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynaClient dynamodbiface.DynamoDBAPI) (*User, error) {
 	var u User
-	if err := json.Unmarshal([]byte(req.body), &u); err != nil {
+	if err := json.Unmarshal([]byte(req.Body), &u); err != nil {
 		return nil, errors.New(ErrorInvalidUserData)
 	}
 	currentUser, _ := FetchUser(u.Email, tableName, dynaClient)
@@ -121,7 +121,7 @@ func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynaClient 
 		TableName: aws.String(tableName),
 	}
 
-	_, err = dynaClient.PutItemInput(input)
+	_, err = dynaClient.PutItem(&input)
 	if err != nil {
 		return nil, errors.New(ErrorCouldNotDynamoPutItem)
 	}

@@ -31,7 +31,7 @@ func main() {
 
 const tableName = "LambdaInGoUser"
 
-func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, err) {
+func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	switch req.HTTPMethod {
 	case "GET":
 		return handlers.GetUser(req, tableName, dynaClient)
@@ -40,7 +40,7 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 	case "PUT":
 		return handlers.UpdateUser(req, tableName, dynaClient)
 	case "DELETE":
-		return handlers.DeletetUser(req, tableName, dynaClient)
+		return handlers.DeleteUser(req, tableName, dynaClient)
 	default:
 		return handlers.UnhandledMethod()
 	}
