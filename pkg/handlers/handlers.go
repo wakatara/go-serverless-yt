@@ -52,7 +52,7 @@ func UpdateUser(req events.APIGatewayProxyRequest, tableName string, dynaClient 
 
 	result, err := user.UpdateUser(req, tableName, dynaclient)
 	if err != nil {
-		return apiRepsonse(http.StatusBadRequest, ErrorBody{
+		return apiResponse(http.StatusBadRequest, ErrorBody{
 			aws.String(err.Error())
 		})
 	}
@@ -64,7 +64,7 @@ func DeleteUser(req events.APIGatewayProxyRequest, tableName string, dynaClient 
 
 	err := user.DeletetUser(req, tableName, dynaClient)
 	if err != nil {
-		return apiRepsonse(http.StatusBadRequest, ErrorBody{
+		return apiResponse(http.StatusBadRequest, ErrorBody{
 			aws.String(err.Error())
 		})
 	}
